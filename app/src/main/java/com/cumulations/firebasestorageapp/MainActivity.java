@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         if (mImageUri != null) {
             StorageReference fileReference = mStorageRef.child(System.currentTimeMillis()
                     + "." + getFileExtension(mImageUri));
-            
+
             mUploadTask = fileReference.putFile(mImageUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -129,7 +129,8 @@ public class MainActivity extends AppCompatActivity {
                             }, 500);
 
                             Toast.makeText(MainActivity.this, "Upload successful", Toast.LENGTH_LONG).show();
-                            Upload upload = new Upload(mEditTextFileName.getText().toString().trim(), taskSnapshot.getStorage().getDownloadUrl().toString());
+                            Upload upload = new Upload(mEditTextFileName.getText().toString().trim(),
+                                    taskSnapshot.getStorage().getDownloadUrl().toString());
                             String uploadId = mDatabaseRef.push().getKey();
                             mDatabaseRef.child(uploadId).setValue(upload);
                         }
@@ -156,5 +157,4 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ImagesActivity.class);
         startActivity(intent);
     }
-
 }
