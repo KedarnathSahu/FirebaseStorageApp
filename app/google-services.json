@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "265774467276-2okgml0r8qdf8lgh0kf2n0avee01mbhp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cumulations.firebasestorageapp",
+            "certificate_hash": "dacdc850b6c1269f616eac5a59f5b93f79a5cb3f"
+          }
+        },
+        {
           "client_id": "265774467276-eopmcgu66pp3qhgc8nn7qs18pmc30lt2.apps.googleusercontent.com",
           "client_type": 3
         }

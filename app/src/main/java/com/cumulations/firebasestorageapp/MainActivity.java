@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -113,32 +114,38 @@ public class MainActivity extends AppCompatActivity {
 
     private void uploadFile() {
         if (mImageUri != null) {
-            StorageReference fileReference = mStorageRef.child(System.currentTimeMillis()
+            final StorageReference fileReference = mStorageRef.child(System.currentTimeMillis()
                     + "." + getFileExtension(mImageUri));
 
             mUploadTask = fileReference.putFile(mImageUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
+                            Task<Uri> result = taskSnapshot.getMetadata().getReference().getDownloadUrl();
+                            result.addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
-                                public void run() {
-                                    mProgressBar.setProgress(0);
-                                }
-                            }, 500);
+                                public void onSuccess(Uri uri) {
 
-                            Toast.makeText(MainActivity.this, "Upload successful", Toast.LENGTH_LONG).show();
-                            Upload upload = new Upload(mEditTextFileName.getText().toString().trim(),
-                                    taskSnapshot.getStorage().getDownloadUrl().toString());
-                            String uploadId = mDatabaseRef.push().getKey();
-                            mDatabaseRef.child(uploadId).setValue(upload);
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Handler handler = new Handler();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mProgressBar.setProgress(0);
+                                        }
+                                    }, 500);
+
+                                    Toast.makeText(MainActivity.this, "Upload successful", Toast.LENGTH_LONG).show();
+                                    Upload upload = new Upload(mEditTextFileName.getText().toString().trim(), uri.toString());
+                                    String uploadId = mDatabaseRef.push().getKey();
+                                    mDatabaseRef.child(uploadId).setValue(upload);
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+
+                                }
+                            });
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
